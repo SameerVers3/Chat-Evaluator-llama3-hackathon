@@ -17,4 +17,6 @@ env/
 venv
 
 #Secrets
-CREDS.py
+.env
+llama3hackathon/
+
