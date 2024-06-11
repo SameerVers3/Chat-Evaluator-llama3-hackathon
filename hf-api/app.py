@@ -17,12 +17,11 @@ app.add_middleware(
 @app.post("/chat/")
 async def chat_endpoint(input_data: dict):
     response = await chat(input_data)
-    print("==> ",  response)
-    return {"response": response['response']}
+    return {"response": response}
 
 async def gradio_chat(text):
     response = await chat({"text": text})
-    return response['response']
+    return response
 
 iface = gr.Interface(fn=gradio_chat, inputs="text", outputs="text")
 iface.launch()

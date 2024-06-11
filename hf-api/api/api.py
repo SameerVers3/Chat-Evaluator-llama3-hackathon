@@ -1,4 +1,6 @@
 import os
+import re
+import json
 from fastapi import FastAPI
 
 from langchain_core.prompts import ChatPromptTemplate
@@ -16,6 +18,7 @@ class ChatOutput(BaseModel):
 app = FastAPI()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GROQ_API_KEY = "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"
 
 llm = ChatGroq(api_key=GROQ_API_KEY, model="llama3-8b-8192")
 with open("./api/prompts/system_prompt.txt", "r") as f:
@@ -36,7 +39,19 @@ chain = prompt | llm | parser
 @app.post("/chat/")
 async def chat(input_data: ChatOutput):
     res = chain.invoke({"user_query": input_data['text']})
-    return {"response": res}
+    if res is None:
+        return {"score": 0, "description": "No response found."}
+
+    if isinstance(res, dict):
+        return res
+
+    if isinstance(res, str):
+        # get dict object between ``` and ``` in the string
+        res = re.search(r'```(.*?)```', res, re.DOTALL)
+
+    return res
+    
+    # return {"response": res}
 
 # with open('./api/chats/good_chat.txt', 'r') as f:
 #     chat = f.read()
