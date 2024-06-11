@@ -18,7 +18,6 @@ class ChatOutput(BaseModel):
 app = FastAPI()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-GROQ_API_KEY = "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"
 
 llm = ChatGroq(api_key=GROQ_API_KEY, model="llama3-8b-8192")
 with open("./api/prompts/system_prompt.txt", "r") as f:
