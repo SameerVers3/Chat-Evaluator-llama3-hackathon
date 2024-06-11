@@ -1,4 +1,3 @@
-# app.py
 import gradio as gr
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

@@ -1,12 +1,17 @@
 import os
 from fastapi import FastAPI
-from pydantic import BaseModel
+
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import PromptTemplate
+from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain_core.output_parsers import JsonOutputParser
+
 from langchain_groq import ChatGroq
 # from api.CREDS import GROQ_API_KEY
 
-class ChatInput(BaseModel):
-    text: str
+class ChatOutput(BaseModel):
+    score: int = Field(description="score of chats out of 100")
+    description: str = Field(description="short description on how the score was given")
 
 app = FastAPI()
 
@@ -17,13 +22,25 @@ with open("./api/prompts/system_prompt.txt", "r") as f:
     system = f.read()
 
 human = "{text}"
-prompt = ChatPromptTemplate.from_messages([
-    ("system", system),
-    ("human", human)
-])
-chain = prompt | llm
+
+parser = JsonOutputParser(pydantic_object=ChatOutput)
+
+
+prompt = PromptTemplate(
+    template=system,
+    input_variables=['user_query'],
+    partial_variables={"format_instructions": parser.get_format_instructions()},
+)
+chain = prompt | llm | parser
 
 @app.post("/chat/")
-async def chat(input_data: ChatInput):
-    res = chain.invoke(input_data['text'])
-    return {"response": res.content}
+async def chat(input_data: ChatOutput):
+    res = chain.invoke({"user_query": input_data['text']})
+    return {"response": res}
+
+# with open('./api/chats/good_chat.txt', 'r') as f:
+#     chat = f.read()
+    
+# result = chain.invoke({"user_query": chat})
+
+# print(result)
