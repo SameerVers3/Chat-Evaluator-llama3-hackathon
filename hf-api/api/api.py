@@ -1,6 +1,7 @@
 import os
 import re
 import json
+from typing import List, Dict
 from fastapi import FastAPI
 
 from langchain_core.prompts import ChatPromptTemplate
@@ -13,7 +14,9 @@ from langchain_groq import ChatGroq
 
 class ChatOutput(BaseModel):
     score: int = Field(description="score of chats out of 100")
-    description: str = Field(description="short description on how the score was given")
+    description: str = Field(description="Short description on why the score was given, and also suggest tips for user on how could he/she make it interactive and better.")
+    messages: List[Dict[str, str]] = Field(description="Create a list of 3 potential messages to make the chat better and more interesting. Feel free to suggest jokes or share some fun facts to make the conversation more interactive and healthy. Each message should include a username and message key value.")
+    
 
 app = FastAPI()
 
@@ -27,7 +30,6 @@ human = "{text}"
 
 parser = JsonOutputParser(pydantic_object=ChatOutput)
 
-
 prompt = PromptTemplate(
     template=system,
     input_variables=['user_query'],
@@ -35,6 +37,7 @@ prompt = PromptTemplate(
 )
 chain = prompt | llm | parser
 
+print(parser.get_format_instructions())
 @app.post("/chat/")
 async def chat(input_data: ChatOutput):
     res = chain.invoke({"user_query": input_data['text']})
@@ -51,10 +54,3 @@ async def chat(input_data: ChatOutput):
     return res
     
     # return {"response": res}
-
-# with open('./api/chats/good_chat.txt', 'r') as f:
-#     chat = f.read()
-    
-# result = chain.invoke({"user_query": chat})
-
-# print(result)
