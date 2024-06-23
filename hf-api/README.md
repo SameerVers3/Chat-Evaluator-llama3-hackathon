@@ -43,7 +43,7 @@ https://ashad001-llama3hackathon.hf.space
 If you prefer making direct HTTP requests to the API, use the following endpoint:
 
 ```
-https://ashad001-llama3hackathon.hf.space/predict
+https://ashad001-llama3hackathon.hf.space/chat
 ```
 
 ## Request Format
@@ -52,7 +52,7 @@ The API expects a JSON payload in the following format:
 
 ```json
 {
-  "input": "<your-chat-input>"
+  "input": "<chat-messages-in-one-string>"
 }
 ```
 
@@ -109,7 +109,7 @@ The API responds with a JSON object containing the evaluation score, a descripti
     ```python
     import requests
 
-    url = "https://ashad001-llama3hackathon.hf.space/predict"
+    url = "https://ashad001-llama3hackathon.hf.space/chat"
     headers = {"Content-Type": "application/json"}
     data = {
         "input": "<your-chat-input>"
@@ -125,7 +125,3 @@ The API responds with a JSON object containing the evaluation score, a descripti
     else:
         print("Error:", response.status_code)
     ```
-
-## Contact
-
-For any issues or questions, please contact [Your Name] at [your-email@example.com].
