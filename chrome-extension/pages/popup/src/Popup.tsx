@@ -41,14 +41,10 @@ const Popup = () => {
     });
   },[])
 
-  const handleExtensionActivation = (value:boolean) => {
-
-    setIsExtensionActive(prev => value);
-    chrome.storage.sync.set({'isExtensionActive':value})
-  }
 
   const toggleActivation = (newState:boolean) => {
     setIsExtensionActive(newState);
+    chrome.storage.sync.set({'isExtensionActive':newState})
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs:any) {
       chrome.tabs.sendMessage(tabs[0].id, {action: "toggleActivation", state: newState });
     });
