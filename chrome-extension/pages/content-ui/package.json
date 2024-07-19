@@ -1,0 +1,30 @@
+{
+  "name": "@chrome-extension-boilerplate/content-ui",
+  "version": "0.0.1",
+  "description": "chrome extension content ui",
+  "type": "module",
+  "private": true,
+  "sideEffects": true,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build:tailwindcss": "tailwindcss -i src/tailwind-input.css -o src/tailwind-output.css",
+    "build": "pnpm run clean && pnpm type-check && pnpm build:tailwindcss && vite build",
+    "build:watch": "cross-env __DEV__=true vite build -w --mode development & pnpm build:tailwindcss -- --watch",
+    "dev": "pnpm build:watch",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "pnpm lint --fix",
+    "prettier": "prettier . --write --ignore-path ../../.prettierignore",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@chrome-extension-boilerplate/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@chrome-extension-boilerplate/tailwindcss-config": "workspace:*",
+    "@chrome-extension-boilerplate/tsconfig": "workspace:*",
+    "@chrome-extension-boilerplate/hmr": "workspace:*"
+  }
+}
