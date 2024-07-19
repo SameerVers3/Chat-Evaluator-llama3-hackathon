@@ -145,13 +145,14 @@ async function sendChatHistoryToBackend(history: MessageDetails[]): Promise<void
 export function runWhatsappScript(): void {
   console.log("WhatsApp script injected");
   const chatHistoryExtracted = extractWhatsAppChats();
-  sendChatHistoryToBackend(chatHistoryExtracted.chatHistory);
+  console.log(`chatHistory=`,chatHistoryExtracted)
+  // sendChatHistoryToBackend(chatHistoryExtracted.chatHistory);
 }
 
 export function runLinkedInScript():void {
   console.log(`Linkedin Script Injected`)
   const linkedinChatHistory = extractLinkedInChat();
-  console.log(linkedinChatHistory);
+  console.log(`chatHistory=`,linkedinChatHistory)
 }
 
 

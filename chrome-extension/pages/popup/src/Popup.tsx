@@ -6,6 +6,7 @@ import { ComponentPropsWithoutRef, useEffect, useState } from 'react';
 const Popup = () => {
 
   const [activeTabUrl,setActiveTabUrl] = useState<string>('');
+  const [isExtensionActive,setIsExtensionActive] = useState(false);
 
 
   useEffect(() => {
@@ -25,7 +26,6 @@ const Popup = () => {
 
     // Check the active tab when the popup is opened
     checkActiveTab();
-
     // Listen for tab change events
     chrome.tabs.onActivated.addListener(checkActiveTab);
 
@@ -34,6 +34,25 @@ const Popup = () => {
       chrome.tabs.onActivated.removeListener(checkActiveTab);
     };
   }, []);
+
+  useEffect(()=>{
+    chrome.storage.sync.get('isExtensionActive', (data) => {
+      setIsExtensionActive(data.isExtensionActive || false);
+    });
+  },[])
+
+  const handleExtensionActivation = (value:boolean) => {
+
+    setIsExtensionActive(prev => value);
+    chrome.storage.sync.set({'isExtensionActive':value})
+  }
+
+  const toggleActivation = (newState:boolean) => {
+    setIsExtensionActive(newState);
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs:any) {
+      chrome.tabs.sendMessage(tabs[0].id, {action: "toggleActivation", state: newState });
+    });
+  }
 
   const sendMessage = () => {
 
@@ -64,23 +83,31 @@ const Popup = () => {
         <p className="text-lg font-semibold text-blue-700 mt-2">Your AI Social Media Assistant!</p>
       </div>
       <div className="bg-white flex justify-center items-center flex-col gap-3 flex-grow rounded-t-3xl shadow-lg ">
-      {activeTabUrl.length > 0 ?
         <button
           onClick={sendMessage}
           className="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
         >
           Send
         </button>
+       </div> 
+
+
+       <div className="bg-white flex justify-center items-center flex-col gap-3 flex-grow  shadow-lg ">
+       <button
+          onClick={()=>toggleActivation(true)}
+          className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
+        >
+         { isExtensionActive ? `Activated` :'Activate' }
+        </button>
+        <button
+          onClick={()=>toggleActivation(false)}
+          className="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition duration-200"
+        >
+          Deactivate
+        </button>
+       </div>
      
-      :<div>
-
-        Not Valid For This Website...
-
-      </div>
-    
-  }
   </div>
-    </div>
   );
 };
 
