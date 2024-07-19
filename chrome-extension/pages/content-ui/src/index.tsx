@@ -19,7 +19,7 @@ rootIntoShadow.id = 'shadow-root';
 const shadowRoot = root.attachShadow({ mode: 'open' });
 shadowRoot.appendChild(rootIntoShadow);
 
-/** Inject styles into shadow dom */
+
 const globalStyleSheet = new CSSStyleSheet();
 globalStyleSheet.replaceSync(tailwindcssOutput);
 
@@ -31,7 +31,7 @@ createRoot(rootIntoShadow).render(<App />);
 
 
 if (window.location.href === "https://web.whatsapp.com/") {
-  console.log("WhatsApp script injected blah blah blah");
+  console.log("WhatsApp script injected.");
 
   const observer = new MutationObserver((mutations) => {
     console.log('Mutation observed');
@@ -41,16 +41,32 @@ if (window.location.href === "https://web.whatsapp.com/") {
       console.log('Footer found');
       console.log("----------------------------------");
       console.log(footer);
-      const input = document.querySelector("_ak1r");
-      if (input) {
+      const input = footer.querySelector("._ak1q");
+      console.log(input);
+      console.log("------------------===========------------------");
+      if (input && input.id !== "whatsapp-input") {
         console.log('Input found');
         console.log("----------------------------------");
-        createRoot(input).render(<WhatsappInput />);
-        observer.disconnect();
+    
+        const whatsappDiv = document.createElement('div');
+        whatsappDiv.className = 'whatsapp-container'; 
+
+        if (input.parentNode) {
+          input.parentNode.insertBefore(whatsappDiv, input);
+        }
+    
+        if (input.parentNode instanceof HTMLElement) {
+          input.parentNode.style.display = 'flex';
+          input.parentNode.style.flexDirection = 'column';
+        }
+    
+        createRoot(whatsappDiv).render(<WhatsappInput />);
+        
+        input.id = "whatsapp-input";
+
       }
     }
   });
 
-  // Start observing the document body for changes
   observer.observe(document.body, { childList: true, subtree: true });
 }
