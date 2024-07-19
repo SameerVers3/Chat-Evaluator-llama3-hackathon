@@ -1,4 +1,4 @@
-import {runWhatsappScript} from "./whatsapp";
+import {runWhatsappScript,runLinkedInScript} from "./whatsapp";
 
 console.log("hello frion content/lib/index.ts");
 
@@ -12,6 +12,13 @@ console.log(window.location.href);
 
 if (window.location.href === "linkedin.com") {
   console.log('linkedin page');
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === 'callit') {
+      console.log("runnig the func tion");
+      runLinkedInScript();
+      console.log("called it");
+    };
+  })
 
 }
 

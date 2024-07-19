@@ -74,6 +74,37 @@ function extractWhatsAppChats(): ChatHistory {
   };
 }
 
+function extractLinkedInMsg(node:any) {
+  // Extract the context information
+  const contextSpan = node.querySelector('.msg-s-event-listitem--group-a11y-heading');
+  const context = contextSpan ? contextSpan.textContent.trim() : '';
+
+  // Extract the message content
+  const messageElement = node.querySelector('.msg-s-event-listitem__body');
+  const message = messageElement ? messageElement.textContent.trim() : '';
+
+  // Create the object with the extracted data
+  const messageData = {
+    context: context,
+    message: message
+  };
+
+  return messageData;
+}
+
+function extractLinkedInChat(): any[] {
+      let chat = document.querySelectorAll('.msg-s-message-list__event');
+      let fullChat:any[] = [];
+      if(chat.length > 0){
+
+       chat.forEach((node:any) => {
+            let data =  extractLinkedInMsg(node)
+            fullChat.push(data);
+        })
+      }
+      return fullChat;
+}
+
 async function sendChatHistoryToBackend(history: MessageDetails[]): Promise<void> {
   console.log("Initiating..");
   try {
@@ -115,6 +146,12 @@ export function runWhatsappScript(): void {
   console.log("WhatsApp script injected");
   const chatHistoryExtracted = extractWhatsAppChats();
   sendChatHistoryToBackend(chatHistoryExtracted.chatHistory);
+}
+
+export function runLinkedInScript():void {
+  console.log(`Linkedin Script Injected`)
+  const linkedinChatHistory = extractLinkedInChat();
+  console.log(linkedinChatHistory);
 }
 
 
