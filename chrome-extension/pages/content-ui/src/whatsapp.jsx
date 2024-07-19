@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export default function App() {
+export default function WhatsappInput() {
   useEffect(() => {
     console.log('content ui loaded');
   }, []);
@@ -11,5 +11,3 @@ export default function App() {
     </div>
   );
 }
-
-
