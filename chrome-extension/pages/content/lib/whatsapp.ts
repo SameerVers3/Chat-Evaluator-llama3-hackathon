@@ -83,6 +83,10 @@ function extractLinkedInMsg(node:any) {
   const messageElement = node.querySelector('.msg-s-event-listitem__body');
   const message = messageElement ? messageElement.textContent.trim() : '';
 
+  if(!context && !message){
+    return null
+  }
+
   // Create the object with the extracted data
   const messageData = {
     context: context,
@@ -93,16 +97,54 @@ function extractLinkedInMsg(node:any) {
 }
 
 function extractLinkedInChat(): any[] {
-      let chat = document.querySelectorAll('.msg-s-message-list__event');
+      let chat = document?.querySelectorAll('.msg-s-message-list__event');
       let fullChat:any[] = [];
       if(chat.length > 0){
 
        chat.forEach((node:any) => {
             let data =  extractLinkedInMsg(node)
-            fullChat.push(data);
+            if(data){
+              fullChat.push(data);
+            }
         })
       }
       return fullChat;
+}
+
+function filterMessage(node:any){
+
+  let textNode = node?.querySelectorAll(' .copyable-text')
+  let context = textNode[0]?.getAttribute('data-pre-plain-text') ?? null;
+  let message = textNode[1]?.textContent;
+  
+  if(!context || !textNode || !message){
+    return null;
+  }
+
+  return {
+    context,
+    message
+
+  }
+
+}
+
+function extractWhatsappChat(){
+  let chat = document.querySelectorAll('.message-in , .message-out');
+    let fullChat:any[] = []
+    // console.log(chat);
+    if(chat.length > 0){
+
+      chat.forEach(node => {
+        const data =  filterMessage(node);
+        if(data){
+          fullChat.push(data);
+        }
+      })
+
+    }
+    return fullChat;
+
 }
 
 async function sendChatHistoryToBackend(history: MessageDetails[]): Promise<void> {
@@ -144,7 +186,7 @@ async function sendChatHistoryToBackend(history: MessageDetails[]): Promise<void
 
 export function runWhatsappScript(): void {
   console.log("WhatsApp script injected");
-  const chatHistoryExtracted = extractWhatsAppChats();
+  const chatHistoryExtracted =extractWhatsappChat()
   console.log(`chatHistory=`,chatHistoryExtracted)
   // sendChatHistoryToBackend(chatHistoryExtracted.chatHistory);
 }
