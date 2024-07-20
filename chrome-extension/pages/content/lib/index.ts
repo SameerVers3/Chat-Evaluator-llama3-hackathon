@@ -1,4 +1,5 @@
-import {runWhatsappScript,runLinkedInScript} from "./whatsapp";
+import {runWhatsappScript} from "./whatsapp";
+import {runLinkedInScript} from './linkedin'
 
 // console.log("hello frion content/lib/index.ts");
 
