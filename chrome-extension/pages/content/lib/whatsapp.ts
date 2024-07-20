@@ -74,9 +74,9 @@ function extractWhatsappChat(): Message[] {
   return fullChat;
 }
 
-function injectWhatsappSuggestions(messages: Message[]): void {
+function injectWhatsappSuggestions(messages: any[]): void {
 
-  console.log(messages);
+  // console.log(messages);
 
   const footer: HTMLElement | null = document.querySelector('footer');
 
@@ -156,35 +156,151 @@ function injectWhatsappSuggestions(messages: Message[]): void {
   injectSpot.insertBefore(suggestionDiv, injectSpot.firstChild);
 }
 
-function handleMessageClick(message: Message): void {
-  console.log('Sending message:', message);
 
-  const nodeList = document.querySelectorAll('.selectable-text.copyable-text.x15bjb6t.x1n2onr6');
+function createMessageDiv(text:any) {
+  // Create the outer div
+  const outerDiv = document.createElement('div');
+  outerDiv.className = 'x1hx0egp x6ikm8r x1odjw0f x1k6rcq7 x6prxxf';
+  outerDiv.contentEditable = 'true';
+  outerDiv.role = 'textbox';
+  outerDiv.spellcheck = true;
+  outerDiv.setAttribute('aria-label', 'Type a message');
+  outerDiv.tabIndex = 10;
+  outerDiv.setAttribute('data-tab', '10');
+  outerDiv.setAttribute('data-lexical-editor', 'true');
+  outerDiv.style.maxHeight = '11.76em';
+  outerDiv.style.minHeight = '1.47em';
+  outerDiv.style.userSelect = 'text';
+  outerDiv.style.whiteSpace = 'pre-wrap';
+  outerDiv.style.wordBreak = 'break-word';
 
-  if (nodeList.length === 0) {
-    console.error('No elements found with the specified classes.');
-    return;
-  }
+  // Create the paragraph element
+  const paragraph = document.createElement('p');
+  paragraph.className = 'selectable-text copyable-text x15bjb6t x1n2onr6';
+  paragraph.dir = 'ltr';
+  paragraph.style.textIndent = '0px';
+  paragraph.style.marginTop = '0px';
+  paragraph.style.marginBottom = '0px';
 
-  const lastElement = nodeList[nodeList.length - 1] as HTMLParagraphElement;
-
-
+  // Create the span element
   const span = document.createElement('span');
-  span.classList.add('selectable-text', 'copyable-text');
-  span.dataset.lexicalText = 'true';
-  span.innerText = `${message}`;
+  span.className = 'selectable-text copyable-text';
+  span.setAttribute('data-lexical-text', 'true');
+  span.textContent = text;
 
-  console.log(lastElement);
+  // Assemble the elements
+  paragraph.appendChild(span);
+  outerDiv.appendChild(paragraph);
 
-  lastElement.innerHTML = ''; 
-  lastElement.appendChild(span);
-  
-  console.log(lastElement);
-
-  console.log('Sending message:', message);
-  console.log(span);
-  console.log(lastElement);
+  return outerDiv;
 }
+
+function createSendButton() {
+  // Create the outer div
+  const outerDiv = document.createElement('div');
+  outerDiv.className = '_ak1t _ak1u';
+
+  // Create the button
+  const button = document.createElement('button');
+  button.setAttribute('data-tab', '11');
+  button.setAttribute('aria-label', 'Send');
+  button.className = 'x1c4vz4f x2lah0s xdl72j9 xfect85 x1iy03kw x1lfpgzf';
+
+  // Create the span
+  const span = document.createElement('span');
+  span.setAttribute('data-icon', 'send');
+
+  // Create the SVG
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('height', '24');
+  svg.setAttribute('width', '24');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  svg.setAttribute('version', '1.1');
+  svg.setAttribute('x', '0px');
+  svg.setAttribute('y', '0px');
+  svg.setAttribute('enable-background', 'new 0 0 24 24');
+
+  // Create the title
+  const title = document.createElement('title');
+  title.textContent = 'send';
+
+  // Create the path
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('fill', 'currentColor');
+  path.setAttribute('d', 'M1.101,21.757L23.8,12.028L1.101,2.3l0.011,7.912l13.623,1.816L1.112,13.845 L1.101,21.757z');
+
+  // Assemble the elements
+  svg.appendChild(title);
+  svg.appendChild(path);
+  span.appendChild(svg);
+  button.appendChild(span);
+  outerDiv.appendChild(button);
+
+  return outerDiv;
+}
+
+
+function handleMessageClick(message: Message): void {
+
+// targetElement?.focus();
+   const node = document.querySelectorAll('.lexical-rich-text-input')[1];
+   const parent  = node.parentNode;
+   const mega = parent?.parentNode;
+  // const bigNode = node.parentElement
+  // const parentNode = node.parentElement
+   if(node && mega){
+     node.innerHTML =''
+     const whatsappInput = createMessageDiv(message)
+     node.appendChild(whatsappInput);
+  
+
+    while(mega.firstChild){
+      mega.removeChild(mega.firstChild);
+    }
+  
+    mega.appendChild(createSendButton())
+  mega.insertBefore(parent,mega.firstChild);
+  // mega.appendChild(createSendButton())
+
+
+  //   console.log(parentNode?.childElementCount)
+  //   const whatsappSendButton = createSendButton();
+
+  //   // if(parentNode && bigNode){
+  //   //   parentNode.innerHTML = ''
+  //   //   parentNode.appendChild(bigNode);
+  //   //   parentNode?.appendChild(whatsappSendButton)
+
+   }
+
+
+ }
+
+
+
+
+
+
+
+  // console.log(lastElement);
+
+  // const span = document.createElement('span');
+  // span.classList.add('selectable-text', 'copyable-text');
+  // span.dataset.lexicalText = 'true';
+  // span.innerText = `${message}`;
+
+  // console.log(lastElement);
+
+  // lastElement.innerHTML = ''; 
+  // lastElement.appendChild(span);
+  
+  // console.log(lastElement);
+
+  // console.log('Sending message:', message);
+  // console.log(span);
+  // console.log(lastElement);
+
 
 
 
