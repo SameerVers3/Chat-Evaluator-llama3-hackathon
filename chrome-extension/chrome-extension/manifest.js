@@ -23,7 +23,7 @@ const manifest = Object.assign(
      * if you want to support multiple languages, you can use the following reference
      * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Internationalization
      */
-    name: '__MSG_extensionName__',
+    name: 'Personify',
     version: packageJson.version,
     description: '__MSG_extensionDescription__',
     permissions: ['storage','tabs','activeTab'],
@@ -34,13 +34,17 @@ const manifest = Object.assign(
     },
     action: {
       default_popup: 'popup/index.html',
-      default_icon: 'icon-34.png',
+      default_icon: { 
+        "128": "icon-128.svg",
+        "34": "icon-34.svg"
+    }
     },
     // chrome_url_overrides: {
     //   newtab: 'new-tab/index.html',
     // },
     icons: {
-      128: 'icon-128.png',
+      128: 'icon-128.svg',
+      34:'icon-34.svg'
     },
     content_scripts: [
       {
@@ -59,7 +63,7 @@ const manifest = Object.assign(
     // devtools_page: 'devtools/index.html',
     web_accessible_resources: [
       {
-        resources: ['*.js', '*.css', '*.svg', 'icon-128.png', 'icon-34.png'],
+        resources: ['*.js', '*.css', '*.svg'],
         matches: ['*://*/*'],
       },
     ],

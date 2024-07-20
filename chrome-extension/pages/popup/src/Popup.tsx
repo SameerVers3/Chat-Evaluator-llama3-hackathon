@@ -50,26 +50,26 @@ const Popup = () => {
     });
   }
 
-  const sendMessage = () => {
+  // const sendMessage = () => {
 
-    console.log('sending message');
+  //   console.log('sending message');
 
-    const query = { active: true, currentWindow: true };
+  //   const query = { active: true, currentWindow: true };
 
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const currentTab = tabs[0];
-      console.log('currentTab', currentTab);
-      if (currentTab && currentTab.id !== undefined) {
-        chrome.tabs.sendMessage(currentTab.id, { action: 'callit' }, (response) => {
-          console.log('response', response);
-        });
-      } else {
-        console.error('No active tab found or tab ID is undefined');
-      }
-    });
+  //   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  //     const currentTab = tabs[0];
+  //     console.log('currentTab', currentTab);
+  //     if (currentTab && currentTab.id !== undefined) {
+  //       chrome.tabs.sendMessage(currentTab.id, { action: 'callit' }, (response) => {
+  //         console.log('response', response);
+  //       });
+  //     } else {
+  //       console.error('No active tab found or tab ID is undefined');
+  //     }
+  //   });
 
-    console.log("Send message to background");
-  };
+  //   console.log("Send message to background");
+  // };
 
 
   return (
@@ -78,14 +78,14 @@ const Popup = () => {
         <h2 className="text-2xl font-bold text-blue-900">Personify</h2>
         <p className="text-lg font-semibold text-blue-700 mt-2">Your AI Social Media Assistant!</p>
       </div>
-      <div className="bg-white flex justify-center items-center flex-col gap-3 flex-grow rounded-t-3xl shadow-lg ">
+      {/* <div className="bg-white flex justify-center items-center flex-col gap-3 flex-grow rounded-t-3xl shadow-lg ">
         <button
           onClick={sendMessage}
           className="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
         >
           Send
         </button>
-       </div> 
+       </div>  */}
 
 
        <div className="bg-white flex justify-center items-center flex-col gap-3 flex-grow  shadow-lg ">
