@@ -26,8 +26,9 @@ Contextual Cues:
 Presence of urgent keywords (e.g., "urgent," "ASAP," "emergency").
 Use of punctuation and capitalization to express intensity (e.g., exclamation marks, all caps).
 
-You have to answer ONLY in a JSON format (use double quotes for strings) like this and NOTHING ELSE:
----
+You have to answer in a JSON format like this and NOTHING ELSE:
 {format_instructions}
----
+
+
+USER_QUERY:
 {user_query}
