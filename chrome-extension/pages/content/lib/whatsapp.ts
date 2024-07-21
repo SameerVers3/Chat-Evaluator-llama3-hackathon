@@ -26,9 +26,6 @@ interface ChatSuggestion {
   description: string;
 }
 
-// Replace with your own identifier (e.g., phone number or name)
-const SELF_IDENTIFIER = "Your Name";
-
 function filterMessage(node: Element): Message | null {
   const textNode = node.querySelectorAll('.copyable-text');
   const context = textNode[0]?.getAttribute('data-pre-plain-text') ?? null;
@@ -45,12 +42,8 @@ function filterMessage(node: Element): Message | null {
     return null;
   }
 
-  console.log(node);
-
   if (node.classList.contains('message-out')) {
-    console.log("it's a message out");
     let self = context.split("]")[0] + "] " + "self" + ":";
-    console.log(self);
     return { context: self, message, replyTo };
   }
   else {
@@ -75,8 +68,6 @@ function extractWhatsappChat(): Message[] {
 }
 
 function injectWhatsappSuggestions(messages: any[]): void {
-
-  // console.log(messages);
 
   const footer: HTMLElement | null = document.querySelector('footer');
 
@@ -272,9 +263,15 @@ function handleMessageClick(message: Message): void {
   //   //   parentNode.appendChild(bigNode);
   //   //   parentNode?.appendChild(whatsappSendButton)
 
+    const sendButton = document.querySelector('.x1c4vz4f.x2lah0s.xdl72j9.xfect85.x1iy03kw.x1lfpgzf') as HTMLButtonElement;
+    
+    if (sendButton) {
+      console.log("found button, clicking");
+      console.log(sendButton);
+      sendButton.click();
+    }
+
    }
-
-
  }
 
 
@@ -314,14 +311,18 @@ function convertChatToDesiredFormat(chat: Message[]): FormattedChat {
 
   chat.forEach((message, index) => {
 
-    console.log("-----------------------------")
-    console.log(message);
-    console.log("-----------------------------")
-
     const messageId = `msg${String(index + 1).padStart(3, '0')}`;
     const rawSender = message.context!.split("] ")[1].split(":")[0];
-    const messageSender = rawSender === SELF_IDENTIFIER ? "self" : rawSender;
+    let messageSender = rawSender;
+
+    const messageOut = document.querySelector(".message-out");
+
+    if (messageOut) {
+      messageSender = "self";
+    }
+
     participants.add(messageSender);
+
     let time = message.context!.split("] ")[0].substring(1);
     time = new Date(time).toISOString();
 
@@ -345,11 +346,12 @@ function convertChatToDesiredFormat(chat: Message[]): FormattedChat {
 
   formattedChat.isGroupChat = participants.size > 2;
 
+  console.log("Formatted chat:", formattedChat);
+
   return formattedChat;
 }
 
 async function sendToGradio(chat: FormattedChat): Promise<ChatSuggestion> {
-  console.log("Sending chat to Gradio");
 
   const client = await Client.connect("Ashad001/llama3hackathon");
   const result = await client.predict("/predict", { 		
@@ -364,11 +366,7 @@ async function sendToGradio(chat: FormattedChat): Promise<ChatSuggestion> {
     .replace(/'/g, '"') // Replace single quotes with double quotes
     .replace(/(\w)\"(\w)/g, "$1\\\"$2");
 
-  console.log(jsonString);
-
   const res = JSON.parse(jsonString);
-
-  console.log(res);
 
   return res;
 }
@@ -384,8 +382,20 @@ export async function runWhatsappScript(): Promise<void> {
 
   const chatSuggestion = await sendToGradio(formattedChat);
 
+  console.log("finding sojmthing ...")
+
+  chrome.storage.sync.get('context', function(data) {
+    console.log(data.context);
+  });
 
   injectWhatsappSuggestions(chatSuggestion.messages);
+
+  console.log("finding sojmthing ...")
+
+  chrome.storage.sync.get('context', function(data) {
+    console.log(data);
+    console.log(data.context);
+  });
 }
 
 // const add_event_delegator = () => {

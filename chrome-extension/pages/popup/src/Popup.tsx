@@ -7,7 +7,33 @@ const Popup = () => {
 
   const [activeTabUrl,setActiveTabUrl] = useState<string>('');
   const [isExtensionActive,setIsExtensionActive] = useState(false);
+  const [context, setContext] = useState<string>('');
 
+  useEffect(() => {
+    chrome.storage.sync.get('context', (data) => {
+      console.log(data.context);
+      setContext(data.context || '');
+    });
+
+
+  }, [])
+
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    console.log(e.target.value);
+    console.log('Setting context');
+    setContext(e.target.value);
+    chrome.storage.sync.set({ 'context': e.target.value });
+
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs.length > 0) {
+        chrome.tabs.sendMessage(tabs[0].id ?? 0, { action: 'updateContext', context: e.target.value });
+      }
+    });
+
+    chrome.storage.sync.get('context', (data) => {
+      console.log(data.context);
+    });
+  };
 
   useEffect(() => {
     const checkActiveTab = () => {
@@ -50,59 +76,40 @@ const Popup = () => {
     });
   }
 
-  // const sendMessage = () => {
-
-  //   console.log('sending message');
-
-  //   const query = { active: true, currentWindow: true };
-
-  //   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-  //     const currentTab = tabs[0];
-  //     console.log('currentTab', currentTab);
-  //     if (currentTab && currentTab.id !== undefined) {
-  //       chrome.tabs.sendMessage(currentTab.id, { action: 'callit' }, (response) => {
-  //         console.log('response', response);
-  //       });
-  //     } else {
-  //       console.error('No active tab found or tab ID is undefined');
-  //     }
-  //   });
-
-  //   console.log("Send message to background");
-  // };
-
-
   return (
-    <div className="w-screen h-[400px] min-h-screen bg-gradient-to-b from-blue-200 to-white flex flex-col">
-      <div className="h-24 rounded-lg flex flex-col justify-center items-center">
+    <div className="w-screen h-[400px] min-h-screen flex flex-col">
+      <div className="h-24 rounded-lg flex flex-col justify-center items-center bg-blue-200">
         <h2 className="text-2xl font-bold text-blue-900">Personify</h2>
         <p className="text-lg font-semibold text-blue-700 mt-2">Your AI Social Media Assistant!</p>
       </div>
-      {/* <div className="bg-white flex justify-center items-center flex-col gap-3 flex-grow rounded-t-3xl shadow-lg ">
-        <button
-          onClick={sendMessage}
-          className="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
-        >
-          Send
-        </button>
-       </div>  */}
 
-
-       <div className="bg-white flex justify-center items-center flex-col gap-3 flex-grow  shadow-lg ">
-       <button
-          onClick={()=>toggleActivation(true)}
-          className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
-        >
-         { isExtensionActive ? `Activated` :'Activate' }
-        </button>
-        <button
-          onClick={()=>toggleActivation(false)}
-          className="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition duration-200"
-        >
-          Deactivate
-        </button>
+       <div className="flex justify-center items-center flex-col gap-3">
+        <div className='w-full h-[250px] p-5'>
+          <textarea
+            className='w-full p-3 h-full border rounded-lg resize-none focus:outline-blue-200'
+            value={context}
+            onChange={onChange}
+            placeholder='Enter your context here'
+          />
+        </div>
        </div>
-     
+
+       <div className='fixed bottom-0 bg-black w-full flex flex-row gap-5 justify-center rounded-t-lg p-3 bg-blue-200'>
+          <button
+            onClick={()=>toggleActivation(true)}
+            className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
+            >
+            { isExtensionActive ? `Activated` :'Activate' }
+          </button>
+
+          <button
+            onClick={()=>toggleActivation(false)}
+            className="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition duration-200"
+          >
+            Deactivate
+          </button>
+
+        </div>
   </div>
   );
 };

@@ -90,7 +90,7 @@ if(messageElements && messageElements.length !== lastMessageCount){
 }
 
 
-function startMonitoring(){ setInterval(checkNewMessages,2000);}
+function startMonitoring(){ setInterval(checkNewMessages,1000);}
 
 
 //Run only First time when Extension is opened

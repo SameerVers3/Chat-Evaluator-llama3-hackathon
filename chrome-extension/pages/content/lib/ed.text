@@ -1,0 +1,58 @@
+{
+  "text": [
+    {
+      "messageId": "msg001",
+      "messageSender": "self",
+      "messageContent": "Hey, how's your day going?",
+      "time": "2024-07-20T09:00:00Z",
+      "replyTo": null
+    },
+    {
+      "messageId": "msg002",
+      "messageSender": "userB",
+      "messageContent": "Pretty good, just finished a meeting. You?",
+      "time": "2024-07-20T09:05:00Z",
+      "replyTo": "msg001"
+    },
+    {
+      "messageId": "msg003",
+      "messageSender": "self",
+      "messageContent": "Not bad, working on a project. Want to grab lunch later?",
+      "time": "2024-07-20T09:10:00Z",
+      "replyTo": "msg002"
+    },
+    {
+      "messageId": "msg004",
+      "messageSender": "userB",
+      "messageContent": "Sure, sounds good! Where should we go?",
+      "time": "2024-07-20T09:15:00Z",
+      "replyTo": "msg003"
+    },
+    {
+      "messageId": "msg005",
+      "messageSender": "self",
+      "messageContent": "How about that new Italian place?",
+      "time": "2024-07-20T09:20:00Z",
+      "replyTo": "msg004"
+    },
+    {
+      "messageId": "msg006",
+      "messageSender": "userB",
+      "messageContent": "Perfect! Let's meet there at 12:30?",
+      "time": "2024-07-20T09:25:00Z",
+      "replyTo": "msg005"
+    },
+    {
+      "messageId": "msg007",
+      "messageSender": "self",
+      "messageContent": "Sounds great, see you then!",
+      "time": "2024-07-20T09:30:00Z",
+      "replyTo": "msg006"
+    }
+  ],
+  "isGroupChat": false
+}
+
+
+
+No group chat
