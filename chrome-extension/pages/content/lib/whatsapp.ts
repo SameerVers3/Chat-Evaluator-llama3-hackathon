@@ -147,7 +147,7 @@ function injectWhatsappSuggestions(messages: any[]): void {
     div.textContent = `${message}`;
 
     div.addEventListener('click', () => {
-      handleMessageClick(message);
+      insertTextIntoWhatsApp(message);
     });
 
     suggestionDiv.appendChild(div);
@@ -240,51 +240,100 @@ function createSendButton() {
 }
 
 
-function handleMessageClick(message: Message): void {
-
-// targetElement?.focus();
-   const node = document.querySelectorAll('.lexical-rich-text-input')[1];
-   const parent  = node.parentNode;
-   const mega = parent?.parentNode;
-  // const bigNode = node.parentElement
-  // const parentNode = node.parentElement
-   if(node && mega){
-     node.innerHTML =''
-     const whatsappInput = createMessageDiv(message)
-     node.appendChild(whatsappInput);
-  
-
-    while(mega.firstChild){
-      mega.removeChild(mega.firstChild);
-    }
-  
-    mega.appendChild(createSendButton())
-  mega.insertBefore(parent,mega.firstChild);
-  // mega.appendChild(createSendButton())
+// function handleMessageClick(message: Message): void {
 
 
-  //   console.log(parentNode?.childElementCount)
-  //   const whatsappSendButton = createSendButton();
-
-  //   // if(parentNode && bigNode){
-  //   //   parentNode.innerHTML = ''
-  //   //   parentNode.appendChild(bigNode);
-  //   //   parentNode?.appendChild(whatsappSendButton)
-
-    const sendButton = document.querySelector('.x1c4vz4f.x2lah0s.xdl72j9.xfect85.x1iy03kw.x1lfpgzf') as HTMLButtonElement;
+//     const input = document.querySelectorAll(`.lexical-rich-text-input`)[1];
+//     const firstNode:any = input?.firstChild; 
+//     const inputChild:any = firstNode?.firstChild; 
     
-    if (sendButton) {
-      console.log("found button, clicking");
-      console.log(sendButton);
-      sendButton.click();
-    }
+//     const lastChild:any = input.lastChild;
+//     if(lastChild && input.children.length > 1){
+//       lastChild.remove();
+//     }
+//     if(firstNode && inputChild){
+//       inputChild.focus();
+//       document.execCommand(`paste`)
+//       // inputChild.innerHTML = '';
+//       // const element = document.createElement(`span`)
+//         // element.classList.add('selectable-text','copyable-text');
+//         // element.setAttribute(`data-lexical-text`,"true");
+//         // element.innerText = `asdfsadf`;
+//       // inputChild.innerHTML = element
 
-   }
- }
+//     }
+
+
+// // targetElement?.focus();
+//   //  const node = document.querySelectorAll('.lexical-rich-text-input')[1];
+//   //  const parent  = node.parentNode;
+//   //  const mega = parent?.parentNode;
+//   // // const bigNode = node.parentElement
+//   // // const parentNode = node.parentElement
+//   //  if(node && mega){
+//   //    node.innerHTML =''
+//   //    const whatsappInput = createMessageDiv(message)
+//   //    node.appendChild(whatsappInput);
+  
+
+//   //   while(mega.firstChild){
+//   //     mega.removeChild(mega.firstChild);
+//   //   }
+  
+//   //   mega.appendChild(createSendButton())
+//   // mega.insertBefore(parent,mega.firstChild);
+//   // // mega.appendChild(createSendButton())
+
+
+//   // //   console.log(parentNode?.childElementCount)
+//   // //   const whatsappSendButton = createSendButton();
+
+//   // //   // if(parentNode && bigNode){
+//   // //   //   parentNode.innerHTML = ''
+//   // //   //   parentNode.appendChild(bigNode);
+//   // //   //   parentNode?.appendChild(whatsappSendButton)
+
+//   //   const sendButton = document.querySelector('.x1c4vz4f.x2lah0s.xdl72j9.xfect85.x1iy03kw.x1lfpgzf') as HTMLButtonElement;
+    
+//   //   if (sendButton) {
+//   //     console.log("found button, clicking");
+//   //     console.log(sendButton);
+//   //     sendButton.click();
+//   //   }
+
+//   //  }
+//  }
 
 
 
+function insertTextIntoWhatsApp(text:any) {
+  // Find the WhatsApp input field
+  const inputField = document.querySelectorAll('div[contenteditable="true"]')[1];
+  
+  if (inputField) {
+      // Focus on the input field
+      //@ts-ignore
+      inputField.focus();
 
+      // Insert the text
+      document.execCommand('insertText', false, text);
+
+      // Dispatch input event
+      const inputEvent = new Event('input', { bubbles: true, composed: true });
+      inputField.dispatchEvent(inputEvent);
+
+      // Dispatch keydown event (simulating Enter key press)
+      const keydownEvent = new KeyboardEvent('keydown', {
+          bubbles: true,
+          cancelable: true,
+          keyCode: 13,
+          which: 13
+      });
+      inputField.dispatchEvent(keydownEvent);
+  } else {
+      console.error('WhatsApp input field not found');
+  }
+}
 
 
 

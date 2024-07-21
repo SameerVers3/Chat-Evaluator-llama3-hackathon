@@ -130,7 +130,7 @@ function injectLinkedinSuggestions(messages: Message[]): void {
     div.textContent = `${message}`;
 
     div.addEventListener('click', () => {
-      handleMessageClick(message);
+      insertTextIntoLinkedIn(message);
     });
 
     nestedDiv.appendChild(div);
@@ -140,35 +140,32 @@ function injectLinkedinSuggestions(messages: Message[]): void {
   footer.insertBefore(suggestionDiv, footer.firstChild);
 }
 
-function handleMessageClick (message: Message): void {
-  console.log("clicked")
-  const input = document.querySelector('.msg-form__contenteditable');
-  const sendButton = document.querySelector('.msg-form__send-btn')
-  const placeholder = document.querySelector(`.msg-form__placeholder`);
-
-
-  placeholder?.setAttribute(`aria-hidden`,'true');
-  placeholder?.classList.remove('msg-form__placeholder')
-  sendButton?.removeAttribute(`disabled`)
-  sendButton?.classList.remove(`artdeco-button--disabled`);
-  console.log(sendButton);
+function insertTextIntoLinkedIn(text:any) {
+  //select message input field
+  const inputField = document.querySelector('div[contenteditable="true"][aria-label*="message"]');
   
-  
+  if (inputField) {
+      // Focus on the input field
+      //@ts-ignore
+      inputField.focus();
 
-  // console.log(input)
+      // Insert the text
+      document.execCommand('insertText', false, text);
 
-  if (input) {
-    input.setAttribute('data-artdeco-is-focused','true')
-    console.log("input found")
+      // Dispatch input event
+      const inputEvent = new Event('input', { bubbles: true, composed: true });
+      inputField.dispatchEvent(inputEvent);
 
-    const p = document.createElement('p');
-    p.innerText = `${message}`
-    input.innerHTML = '';
-    input.appendChild(p);
-    console.log("added successfully")
+      // Dispatch a change event
+      const changeEvent = new Event('change', { bubbles: true });
+      inputField.dispatchEvent(changeEvent);
+
+
+  } else {
+      console.error('LinkedIn message input field not found');
   }
-
 }
+
 
 
 function convertChatToDesiredFormat(chat: Message[]): FormattedChat {
