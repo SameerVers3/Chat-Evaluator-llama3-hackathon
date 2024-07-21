@@ -143,10 +143,22 @@ function injectLinkedinSuggestions(messages: Message[]): void {
 function handleMessageClick (message: Message): void {
   console.log("clicked")
   const input = document.querySelector('.msg-form__contenteditable');
+  const sendButton = document.querySelector('.msg-form__send-btn')
+  const placeholder = document.querySelector(`.msg-form__placeholder`);
 
-  console.log(input)
+
+  placeholder?.setAttribute(`aria-hidden`,'true');
+  placeholder?.classList.remove('msg-form__placeholder')
+  sendButton?.removeAttribute(`disabled`)
+  sendButton?.classList.remove(`artdeco-button--disabled`);
+  console.log(sendButton);
+  
+  
+
+  // console.log(input)
 
   if (input) {
+    input.setAttribute('data-artdeco-is-focused','true')
     console.log("input found")
 
     const p = document.createElement('p');
@@ -155,6 +167,7 @@ function handleMessageClick (message: Message): void {
     input.appendChild(p);
     console.log("added successfully")
   }
+
 }
 
 

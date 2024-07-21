@@ -55,6 +55,7 @@ let isActive = false;
 let lastMessageCount = 0;
 
 function checkNewMessages () {
+  console.log(`checking website`)
 
   let isWhatsapp = window.location.href.includes('web.whatsapp.com');
   let isLinkedin = window.location.href.includes('linkedin.com/messaging');
