@@ -18,12 +18,20 @@ interface FormattedMessage {
 interface FormattedChat {
   text: FormattedMessage[];
   isGroupChat: boolean;
+  context?: Context | null;
 }
 
 interface ChatSuggestion {
   messages: Message[];
   score: number;
   description: string;
+}
+
+interface Context {
+  context: string | null;
+  SuggestionTone: string | null;
+  MyCurrentEmotion: string | null;
+  FrankLevel: string | null;
 }
 
 function filterMessage(node: Element): Message | null {
@@ -351,8 +359,30 @@ function convertChatToDesiredFormat(chat: Message[]): FormattedChat {
   return formattedChat;
 }
 
-async function sendToGradio(chat: FormattedChat): Promise<ChatSuggestion> {
+function getContextFromStorage() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get('context', function(data) {
+      if (chrome.runtime.lastError) {
+        return reject(chrome.runtime.lastError);
+      }
+      resolve(data.context || '');
+    });
+  });
+}
 
+
+async function sendToGradio(chat: FormattedChat): Promise<ChatSuggestion> {
+  const context = await getContextFromStorage();
+  console.log(context);
+
+  const con = context as Context;
+
+  chat.context = con;
+
+  console.log(chat);
+  
+
+  console.log(JSON.stringify(chat, null, 2));
   const client = await Client.connect("Ashad001/llama3hackathon");
   const result = await client.predict("/predict", { 		
       text: JSON.stringify(chat, null, 2), 
@@ -382,20 +412,7 @@ export async function runWhatsappScript(): Promise<void> {
 
   const chatSuggestion = await sendToGradio(formattedChat);
 
-  console.log("finding sojmthing ...")
-
-  chrome.storage.sync.get('context', function(data) {
-    console.log(data.context);
-  });
-
   injectWhatsappSuggestions(chatSuggestion.messages);
-
-  console.log("finding sojmthing ...")
-
-  chrome.storage.sync.get('context', function(data) {
-    console.log(data);
-    console.log(data.context);
-  });
 }
 
 // const add_event_delegator = () => {
