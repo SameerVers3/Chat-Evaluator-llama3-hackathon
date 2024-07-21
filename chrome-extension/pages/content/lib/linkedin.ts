@@ -17,6 +17,7 @@ interface FormattedMessage {
 interface FormattedChat {
   text: FormattedMessage[];
   isGroupChat: boolean;
+  context?: Context | null;
 }
 
 interface ChatSuggestion {
@@ -25,8 +26,12 @@ interface ChatSuggestion {
   description: string;
 }
 
-// Replace with your own identifier (e.g., phone number or name)
-const SELF_IDENTIFIER = "Your Name";
+interface Context {
+  context: string | null;
+  SuggestionTone: string | null;
+  MyCurrentEmotion: string | null;
+  FrankLevel: string | null;
+}
 
 function extractLinkedInMsg(node: any): Message | null {
   const contextSpan = node.querySelector('.msg-s-event-listitem--group-a11y-heading');
@@ -169,9 +174,11 @@ function insertTextIntoLinkedIn(text:any) {
 
 
 function convertChatToDesiredFormat(chat: Message[]): FormattedChat {
-
   const talkingToElement = document.querySelector("#thread-detail-jump-target");
-  const talkingTo = talkingToElement ? talkingToElement.textContent : "Unknown";
+  const talkingTo = talkingToElement?.textContent?.trim() || "Unknown";
+
+  console.log(`Talking to: ${talkingTo}`); 
+  console.log("----------------------------s")
 
   const formattedChat: FormattedChat = {
     text: [],
@@ -185,33 +192,66 @@ function convertChatToDesiredFormat(chat: Message[]): FormattedChat {
   }
 
   chat.forEach((message, index) => {
-
     const messageId = `msg${String(index + 1).padStart(3, '0')}`;
-    const rawSender = message.context?.split("sent the following message at")[0].trim();
-    const messageSender = rawSender === SELF_IDENTIFIER ? "self" : rawSender || "unknown";
+
+    // Extract sender and time from the context
+    let rawSender = "";
+    let timeString = "";
+
+    if (message.context) {
+      const senderMatch = message.context.match(/^(.*?)(?= sent the following message| at )/);
+      const timeMatch = message.context.match(/at (.*)$/);
+
+      if (senderMatch) {
+        rawSender = senderMatch[1].trim();
+      }
+
+      if (timeMatch) {
+        timeString = timeMatch[1].trim();
+      }
+    }
+
+    let messageSender = rawSender === talkingTo ? rawSender : "self";
+
+    console.log(`Sender: ${messageSender}`);
+    console.log(rawSender)
+
+    if (rawSender === talkingTo && rawSender !== "") {
+      messageSender = rawSender;
+    }
+
     participants.add(messageSender);
 
-    const timeString = message.context?.split("at")[1]?.trim();
     const time = timeString ? new Date(timeString) : new Date();
     const formattedTime = isValidDate(time) ? time.toISOString() : new Date().toISOString();
-
-    let replyToId: string | null = null;
 
     formattedChat.text.push({
       messageId: messageId,
       messageSender: messageSender,
       messageContent: message.message || "",
-      time: time,
-      replyTo: replyToId
+      time: formattedTime,
+      replyTo: null
     });
   });
 
   formattedChat.isGroupChat = participants.size > 2;
 
+  console.log(formattedChat);
   return formattedChat;
 }
 
+
 async function sendToGradio(chat: FormattedChat): Promise<ChatSuggestion> {
+
+  const context = await getContextFromStorage();
+  console.log(context);
+
+  const con = context as Context;
+
+  chat.context = con;
+
+  console.log(chat);
+
   console.log("Sending chat to Gradio");
 
   const client = await Client.connect("Ashad001/llama3hackathon");
@@ -234,7 +274,19 @@ async function sendToGradio(chat: FormattedChat): Promise<ChatSuggestion> {
   return res;
 }
 
+function getContextFromStorage() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get('context', function(data) {
+      if (chrome.runtime.lastError) {
+        return reject(chrome.runtime.lastError);
+      }
+      resolve(data.context || '');
+    });
+  });
+}
+
 export async function runLinkedInScript(): Promise<void> {
+
   console.log("LinkedIn script injected");
   const chatHistoryExtracted = extractLinkedInChat();
   console.log(`chatHistory=`, chatHistoryExtracted);
@@ -246,4 +298,8 @@ export async function runLinkedInScript(): Promise<void> {
   const chatSuggestion = await sendToGradio(formattedChat);
 
   injectLinkedinSuggestions(chatSuggestion.messages);
+}
+
+const SetScore = (score: number, description: string) => {
+  
 }

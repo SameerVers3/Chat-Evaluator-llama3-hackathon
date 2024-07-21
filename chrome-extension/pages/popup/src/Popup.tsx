@@ -14,6 +14,9 @@ const Popup = () => {
     frankLevel: '',
   });
 
+  const [score, setScore] = useState(0);
+  const [description, setDescription] = useState('');
+
   useEffect(() => {
     chrome.storage.sync.get('context', (data) => {
       if (data.context) {
@@ -39,6 +42,16 @@ const Popup = () => {
       [type]: value,
     }));
   };
+
+
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === 'updateScoreAndDescription') {
+      const { score, description } = message;
+      setScore(score);
+      setDescription(description);
+    }
+  });
+
 
 
   useEffect(() => {
@@ -83,14 +96,14 @@ const Popup = () => {
   }
 
   return (
-    <div className="w-screen h-[600px] min-h-screen flex flex-col">
+    <div className="w-screen h-[650px] min-h-screen flex flex-col">
       <div className="h-24 rounded-lg flex flex-col justify-center items-center bg-blue-200">
         <h2 className="text-2xl font-bold text-blue-900">Personify</h2>
-        <p className="text-lg font-semibold text-blue-700 mt-2">Your AI Chattin Assistant!</p>
+        <p className="text-lg font-semibold text-blue-700 mt-2">Your AI Chatting Assistant!</p>
       </div>
 
        <div className="flex justify-center items-center flex-col gap-3">
-        <div className='w-full h-[150px] p-5'>
+        <div className='w-full h-[110px] p-5'>
           <textarea
             className='w-full p-3 h-full border rounded-lg resize-none focus:outline-blue-200'
             value={context.text}
@@ -206,6 +219,23 @@ const Popup = () => {
           </RadioGroup>
         </div>
       </div>
+
+
+      {
+  score > 0 && (
+    <div className="p-4 mt-4 border rounded-lg shadow-md mb-[90px]">
+      <h3 className="text-lg font-semibold text-blue-800">Score</h3>
+      <p className="text-2xl font-bold text-blue-700">
+        {score}/100
+      </p>
+      <p className="mt-2 text-gray-700">
+        {description}
+      </p>
+    </div>
+  )
+}
+
+      
 
 
 

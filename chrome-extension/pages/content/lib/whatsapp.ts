@@ -461,7 +461,13 @@ export async function runWhatsappScript(): Promise<void> {
 
   const chatSuggestion = await sendToGradio(formattedChat);
 
+  sendScoreAndDescription(chatSuggestion.score, chatSuggestion.description);
+
   injectWhatsappSuggestions(chatSuggestion.messages);
+}
+
+function sendScoreAndDescription(score: any, description: any) {
+  chrome.runtime.sendMessage({ action: 'updateScoreAndDescription', score, description });
 }
 
 // const add_event_delegator = () => {
